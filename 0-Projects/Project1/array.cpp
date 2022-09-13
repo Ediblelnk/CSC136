@@ -6,12 +6,18 @@ using namespace std;
 // do NOT change this!
 #define ARRAYSIZE 8
 
+//specific spacing for outputs
+#define NAME_SPACE 15
+#define POP_SPACE 15
+#define AREA_SPACE 20
+#define DENSITY_SPACE 25
+
 // prototypes
 int readDatafile(string[], float[], float[], int);
 void calcPopDensity(float[], float[], float[], int);
-void outputRawData( ... );
-void outputAllData( ... );
-
+void outputRawData(string[], float[], float[], int);
+void outputAllData(string[], float[], float[], float[], int);
+void filterData(string[], float[], float[], float[], int);
 
 int main() {
   string names[ARRAYSIZE];        // state names
@@ -20,13 +26,20 @@ int main() {
 
   float popDensity[ARRAYSIZE];    // state population density
 
-  //will be true if data is read without error
-  if(readDatafile(names, population, area, ARRAYSIZE)) {
-    calcPopDensity(population, area, popDensity, ARRAYSIZE);
-  } else {
-    cout << "-An Unknown Error Occured with File Contents-" << endl;
-    return 1;
-  }
+  int lines;                      // number of lines filled with data
+
+  //read the data and return amount of lines filled with data
+  lines = readDatafile(names, population, area, ARRAYSIZE);
+  //lines will always be equal to or less than ARRAYSIZE
+
+  //no lines were taken from the file
+  if(!lines) {cout << "-Data Format Unusable-" << endl; return 1;}
+
+  calcPopDensity(population, area, popDensity, lines);
+
+  //output the raw and all data
+  outputRawData(names, population, area, lines);
+  outputAllData(names, population, area, popDensity, lines);
 
   return 0;
 }
@@ -41,32 +54,57 @@ int readDatafile(string n[], float p[], float a[], int max) {
   cout << "Enter data file name: ";
   cin >> fname;
   ifs.open(fname);
-  if(ifs.fail()) {cout << "-Error opening file-\n\n";}
+  if(ifs.fail()) {cout << "-Error opening file-" << endl;}
 
   //data file exists, now extract the data from it
   int line=0;
   while(line < max && ifs >> n[line]) {
     ifs >> p[line];
     ifs >> a[line];
-    if(ifs.fail()) {cout << "-The File Failed-" << endl; return 0;}
 
-    //debug feature
-    cout << "Read: " << n[line] << " " << p[line] << " " << a[line] << endl;
+    //data did not have the required format for data extraction
+    if(ifs.fail()) {cout << "-File Failed-" << endl; return 0;}
 
-    line++; //increment line
+    line++;
   }
-    return 1;
+    return line;
 }
 
-  //void outputRawData() {}
+void outputRawData(string n[], float p[], float a[], int max) {
+  cout << "\n\n  -Raw Data-  \n\n";
+  cout << left << setw(NAME_SPACE) << "Name" << right << setw(POP_SPACE) << "Population" << setw(AREA_SPACE) << "Area\n"; //title line
+
+  cout << setw(NAME_SPACE) << " " << setw(POP_SPACE) << "(millions)" << setw(AREA_SPACE) << "(thou. sq. mi.)" << endl; //unit line
+  
+  for(int i = 0; i < NAME_SPACE + POP_SPACE + AREA_SPACE; i++) {cout << "-";}
+  cout << endl;
+
+  for(int i = 0; i < max; i++) {
+    cout << left << setw(NAME_SPACE) << n[i] << right << setw(POP_SPACE) << p[i] << setw(AREA_SPACE) << a[i] << endl;
+  }
+}
+
+void outputAllData(string n[], float p[], float a[], float d[], int max) {
+  cout << "\n\n  -All Data-  \n\n";
+  cout << left << setw(NAME_SPACE) << "Name" << right << setw(POP_SPACE) << "Population" << setw(AREA_SPACE) << "Area" 
+       << setw(DENSITY_SPACE) << "Pop. Density" << endl; //title line
+
+  cout << setw(NAME_SPACE) << " " << setw(POP_SPACE) << "(millions)" << setw(AREA_SPACE) << "(thou. sq. mi.)"
+       << setw(DENSITY_SPACE) << "(peop. per sq. mi.)" << endl; //unit line
+
+  for(int i = 0; i < NAME_SPACE + POP_SPACE + AREA_SPACE + DENSITY_SPACE; i++) {cout << "-";}
+  cout << endl;
+
+  for(int i = 0; i < max; i++) {
+    cout << left << setw(NAME_SPACE) << n[i] << right << setw(POP_SPACE) << p[i] 
+         << setw(AREA_SPACE) << a[i] << setw(DENSITY_SPACE) << d[i] << endl;
+  }
+}
 
 void calcPopDensity(float p[], float a[], float d[], int max) {
-  for(int i = 0; i < max; i++) {
-    d[i] = p[i]/a[i];
-
-    //debug feature
-    cout << "Density " << i << ":" << d[i] << endl;
-  }
+  for(int i = 0; i < max; i++) {d[i] = p[i]/a[i] * 1000;}
 }
 
-  //void outputAllData() {}
+void filterData() {
+
+}
