@@ -1,3 +1,16 @@
+/*
+ Author:          Peter Schaefer
+ Creation Date:   9/11/22
+ Due Date:        9/15/22
+ Course:          CSC136CP 010
+ Professor Name:  Dr. Carelli
+ Assignment:      #1
+ Filename:        array.cpp
+ Purpose:         This program takes states' name, population,
+                  and area from a file and calculates the 
+                  population density. It outputs a formatted data.
+ */
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -48,7 +61,19 @@ int main() {
   return 0;
 }
 
-// open and read the datafile
+
+/*
+ Function name:   readDatafile
+ Description:     prompts the user for a filename and
+                  attempts to read the contents. If possible,
+                  it fits the data to state names, population,
+                  and area.
+ Parameters:      string n[]  -array of names
+                  float p[]   -array of populations
+                  float a[]   -array of areas
+                  int max     -maxiumum element accessed
+ Return Value:    int line    -the amount of lines read
+*/
 int readDatafile(string n[], float p[], float a[], int max) {
   string fname;
   ifstream ifs;
@@ -74,6 +99,15 @@ int readDatafile(string n[], float p[], float a[], int max) {
     return line;
 }
 
+/*
+ Function name:   outputRawData
+ Description:     prints out the states' information in a readable way
+ Parameters:      string n[]  -array of names
+                  float p[]   -array of populations
+                  float a[]   -array of areas
+                  int max     -maxiumum element accessed
+ Return Value:    N/A
+*/
 void outputRawData(string n[], float p[], float a[], int max) {
   cout << "\n\n  -Raw Data-  \n\n";
   cout << fixed << setprecision(1) << left << setw(NAME_SPACE) << "Name" << right << setw(POP_SPACE)
@@ -89,6 +123,17 @@ void outputRawData(string n[], float p[], float a[], int max) {
   }
 }
 
+/*
+ Function name:   outputAllData
+ Description:     prints out the states' information in a readable way
+ Parameters:      string n[]  -array of names
+                  float p[]   -array of populations
+                  float a[]   -array of areas
+                  float d[]   -array of population densities
+                  int max     -maxiumum element accessed
+                  string s    -the title of the data
+ Return Value:    N/A
+*/
 void outputAllData(string n[], float p[], float a[], float d[], int max, string s) {
   cout << "\n\n  -" << s << "-  \n\n";
   cout << left << setw(NAME_SPACE) << "Name" << right << setw(DENSITY_SPACE) << "Pop. Density"
@@ -106,15 +151,35 @@ void outputAllData(string n[], float p[], float a[], float d[], int max, string 
   }
 }
 
+/*
+ Function name:   calcPopDensity
+ Description:     calculates the population density for each state
+ Parameters:      float p[]   -array of populations
+                  float a[]   -array of areas
+                  float d[]   -array of population densities
+                  int max     -maxiumum element accessed
+ Return Value:    N/A
+*/
 void calcPopDensity(float p[], float a[], float d[], int max) {
   for(int i = 0; i < max; i++) {d[i] = p[i]/a[i] * 1000;}
 }
 
+/*
+ Function name:   filterData
+ Description:     filters states' using population density via bubblesort
+ Parameters:      string n[]  -array of names
+                  float p[]   -array of populations
+                  float a[]   -array of areas
+                  float d[]   -array of population densities
+                  int max     -maxiumum element accessed
+ Return Value:    N/A
+*/
 void filterData(string n[], float p[], float a[], float d[], int max) {
   bool flag = true;
   string stemp;
   float ftemp;
 
+  //classic bubble sort
   while(flag) {
     flag = false;
     for(int i = 0; i < max - 1; i++) {
