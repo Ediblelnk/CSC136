@@ -16,7 +16,7 @@ using namespace std;
 int readDatafile(string[], float[], float[], int);
 void calcPopDensity(float[], float[], float[], int);
 void outputRawData(string[], float[], float[], int);
-void outputAllData(string[], float[], float[], float[], int);
+void outputAllData(string[], float[], float[], float[], int, string);
 void filterData(string[], float[], float[], float[], int);
 
 int main() {
@@ -39,7 +39,11 @@ int main() {
 
   //output the raw and all data
   outputRawData(names, population, area, lines);
-  outputAllData(names, population, area, popDensity, lines);
+  outputAllData(names, population, area, popDensity, lines, "All Data");
+
+  filterData(names, population, area, popDensity, lines);
+
+  outputAllData(names, population, area, popDensity, lines, "Filtered Data");
 
   return 0;
 }
@@ -72,7 +76,8 @@ int readDatafile(string n[], float p[], float a[], int max) {
 
 void outputRawData(string n[], float p[], float a[], int max) {
   cout << "\n\n  -Raw Data-  \n\n";
-  cout << left << setw(NAME_SPACE) << "Name" << right << setw(POP_SPACE) << "Population" << setw(AREA_SPACE) << "Area\n"; //title line
+  cout << fixed << setprecision(1) << left << setw(NAME_SPACE) << "Name" << right << setw(POP_SPACE)
+       << "Population" << setw(AREA_SPACE) << "Area\n"; //title line
 
   cout << setw(NAME_SPACE) << " " << setw(POP_SPACE) << "(millions)" << setw(AREA_SPACE) << "(thou. sq. mi.)" << endl; //unit line
   
@@ -84,20 +89,20 @@ void outputRawData(string n[], float p[], float a[], int max) {
   }
 }
 
-void outputAllData(string n[], float p[], float a[], float d[], int max) {
-  cout << "\n\n  -All Data-  \n\n";
-  cout << left << setw(NAME_SPACE) << "Name" << right << setw(POP_SPACE) << "Population" << setw(AREA_SPACE) << "Area" 
-       << setw(DENSITY_SPACE) << "Pop. Density" << endl; //title line
+void outputAllData(string n[], float p[], float a[], float d[], int max, string s) {
+  cout << "\n\n  -" << s << "-  \n\n";
+  cout << left << setw(NAME_SPACE) << "Name" << right << setw(DENSITY_SPACE) << "Pop. Density"
+       << setw(POP_SPACE) << "Population" << setw(AREA_SPACE) << "Area" << endl; //title line
 
-  cout << setw(NAME_SPACE) << " " << setw(POP_SPACE) << "(millions)" << setw(AREA_SPACE) << "(thou. sq. mi.)"
-       << setw(DENSITY_SPACE) << "(peop. per sq. mi.)" << endl; //unit line
+  cout << setw(NAME_SPACE) << " " << setw(DENSITY_SPACE) << "(peop. per sq. mi.)"
+       << setw(POP_SPACE) << "(millions)" << setw(AREA_SPACE) << "(thou. sq. mi.)" << endl; //unit line
 
   for(int i = 0; i < NAME_SPACE + POP_SPACE + AREA_SPACE + DENSITY_SPACE; i++) {cout << "-";}
   cout << endl;
 
   for(int i = 0; i < max; i++) {
-    cout << left << setw(NAME_SPACE) << n[i] << right << setw(POP_SPACE) << p[i] 
-         << setw(AREA_SPACE) << a[i] << setw(DENSITY_SPACE) << d[i] << endl;
+    cout << left << setw(NAME_SPACE) << n[i] << right << setw(DENSITY_SPACE) << d[i] << setw(POP_SPACE) << p[i] 
+         << setw(AREA_SPACE) << a[i] << endl;
   }
 }
 
@@ -105,6 +110,39 @@ void calcPopDensity(float p[], float a[], float d[], int max) {
   for(int i = 0; i < max; i++) {d[i] = p[i]/a[i] * 1000;}
 }
 
-void filterData() {
+void filterData(string n[], float p[], float a[], float d[], int max) {
+  bool flag = true;
+  string stemp;
+  float ftemp;
 
+  while(flag) {
+    flag = false;
+    for(int i = 0; i < max - 1; i++) {
+      if(d[i] < d[i+1]) {
+
+        //switch the names
+        stemp = n[i];
+        n[i] = n[i+1];
+        n[i+1] = stemp;
+
+        //switch the populations
+        ftemp = p[i];
+        p[i] = p[i+1];
+        p[i+1] = ftemp;
+
+        //switch the areas
+        ftemp = a[i];
+        a[i] = a[i+1];
+        a[i+1] = ftemp;
+
+        //switch the pop densitys
+        ftemp = d[i];
+        d[i] = d[i+1];
+        d[i+1] = ftemp;
+
+        //set the flag to know that a switch happened this pass
+        flag = true;
+      }
+    }
+  }
 }
