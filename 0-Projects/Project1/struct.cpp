@@ -1,3 +1,16 @@
+/*
+ Author:          Peter Schaefer
+ Creation Date:   9/11/22
+ Due Date:        9/15/22
+ Course:          CSC136CP 010
+ Professor Name:  Dr. Carelli
+ Assignment:      #1
+ Filename:        struct.cpp
+ Purpose:         This program takes states' name, population,
+                  and area from a file and calculates the 
+                  population density. It outputs a formatted data.
+ */
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -42,8 +55,15 @@ int main() {
   //no lines were taken from the file
   if(!lines) {cout << "-Data Format Unusable-" << endl; return 1;}
 
+  calcPopDensity(slist, lines);
+
   //output the raw and all data
   outputRawData(slist, lines);
+  outputAllData(slist, lines, "All Data");
+
+  filterData(slist, lines);
+
+  outputAllData(slist, lines, "Filtered Data");
 
   return 0;
 }
@@ -54,8 +74,8 @@ int main() {
                   attempts to read the contents. If possible,
                   it fits the data to state names, population,
                   and area.
- Parameters:      struct slist[]  -array of state structs
- Return Value:    int line    -the amount of lines read
+ Parameters:      state slist[]  -array of state structs
+ Return Value:    int line       -the amount of lines read
 */
 int readDatafile(state slist[], int max) {
   string fname;
@@ -85,8 +105,8 @@ int readDatafile(state slist[], int max) {
 /*
  Function name:   outputRawData
  Description:     prints out the states' information in a readable way
- Parameters:      struct slist[]  -array of state structs
-                  int max         -
+ Parameters:      state slist[]  -array of state structs
+                  int max        -maxiumum element accessed
  Return Value:    N/A
 */
 void outputRawData(state slist[], int max) {
@@ -101,5 +121,70 @@ void outputRawData(state slist[], int max) {
 
   for(int i = 0; i < max; i++) {
     cout << left << setw(NAME_SPACE) << slist[i].name << right << setw(POP_SPACE) << slist[i].population << setw(AREA_SPACE) << slist[i].area << endl;
+  }
+}
+
+/*
+ Function name:   outputAllData
+ Description:     prints out the states' information in a readable way
+ Parameters:      state slist[]  -array of state structs
+                  int max        -maxiumum element accessed
+                  string s       -the title of the data
+ Return Value:    N/A
+*/
+void outputAllData(state slist[], int max, string s) {
+  cout << "\n\n  -" << s << "-  \n\n";
+  cout << left << setw(NAME_SPACE) << "Name" << right << setw(DENSITY_SPACE) << "Pop. Density"
+       << setw(POP_SPACE) << "Population" << setw(AREA_SPACE) << "Area" << endl; //title line
+
+  cout << setw(NAME_SPACE) << " " << setw(DENSITY_SPACE) << "(peop. per sq. mi.)"
+       << setw(POP_SPACE) << "(millions)" << setw(AREA_SPACE) << "(thou. sq. mi.)" << endl; //unit line
+
+  for(int i = 0; i < NAME_SPACE + POP_SPACE + AREA_SPACE + DENSITY_SPACE; i++) {cout << "-";}
+  cout << endl;
+
+  for(int i = 0; i < max; i++) {
+    cout << left << setw(NAME_SPACE) << slist[i].name << right << setw(DENSITY_SPACE) << slist[i].popDensity << setw(POP_SPACE) << slist[i].population 
+         << setw(AREA_SPACE) << slist[i].area << endl;
+  }
+}
+
+/*
+ Function name:   calcPopDensity
+ Description:     calculates the population density for each state
+ Parameters:      state slist[] -array of state structs
+                  int max     -maxiumum element accessed
+ Return Value:    N/A
+*/
+void calcPopDensity(state slist[], int max) {
+  for(int i = 0; i < max; i++) {slist[i].popDensity = slist[i].population / slist[i].area * 1000;}
+}
+
+/*
+ Function name:   filterData
+ Description:     filters states' using population density via bubblesort
+ Parameters:      state slist[] -array of state structs
+                  int max       -maximum element accessed
+ Return Value:    N/A
+*/
+void filterData(state slist[], int max) {
+  bool flag = true;
+  state temp;
+
+  //classic bubble sort
+  while(flag) {
+    flag = false;
+    for(int i = 0; i < max - 1; i++) {
+      if(slist[i].popDensity < slist[i+1].popDensity) {
+
+        //switch the state structs
+        temp = slist[i];
+        slist[i] = slist[i+1];
+        slist[i+1] = temp;
+
+        //set the flag to know that a switch happened this pass
+        flag = true;
+      }
+    }
   }
 }
