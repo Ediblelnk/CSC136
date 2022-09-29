@@ -97,6 +97,16 @@ bool State::operator<(const State &) const {
   return this->getName() < getName();
 }
 
+istream &operator>>(istream &input, State &S) {
+  float p; string n; float a;
+  input >> n >> p >> a;
+  S.setName(n);
+  S.setPopulation(p);
+  S.setArea(a);
+
+  return input;
+}
+
 /////////////////////////* State.cpp FILE */////////////////////////
 
 /////////////////////////* states.cpp DRIVER FILE */////////////////////////
@@ -110,21 +120,66 @@ using namespace std;
 // DO NOT CHANGE THIS VALUE!
 #define ARRAYSIZE 8
 
+//specific spacing for outputs
+#define NAME_SPACE 15
+#define POP_SPACE 15
+#define AREA_SPACE 20
+#define DENSITY_SPACE 25
+
 // read the data file, store in class
 int readDatafile(State[], int);
 // output the formatted "raw data"
-void outputData( ... );
+void outputData(State[], int);
 // output the sorted data, including population density
-void outputSorted( ... );
+void outputSorted();
 
 // sorting routines - use a bubble sort
-void sortAscend( ... );  // set this up to sort by name
-void sortDescend( ... ); // set this up to sort by population density
-void swap( ... );        // used by the bubble sort
+void sortAscend();  // set this up to sort by name
+void sortDescend(); // set this up to sort by population density
+void swap();        // used by the bubble sort
 
 int main() {
+
   State slist[ARRAYSIZE];
+  int lines = readDatafile(slist, ARRAYSIZE);
+
+  outputData(slist, lines);
 
   return 0;
+}
+
+int readDatafile(State s[], int max) {
+  string fname;
+  ifstream ifs;
+  int lines = 0;
+
+  string name; float population; float area;
+
+  cout << "Enter data file name: ";
+  cin >> fname;
+  ifs.open(fname);
+  if(ifs.fail()) {cout << "-Error opening file-" << endl;}
+
+  while(lines < max && ifs >> s[lines]) {
+    if(ifs.fail()) {cout << "-File Failed" << endl; return 0;}
+    lines++;
+  }
+  return lines;
+}
+
+void outputData(State s[], int max) {
+  cout << "\n\n -Data- \n\n";
+  cout << fixed << left << setw(NAME_SPACE) << "Name";
+  cout << right << setw(POP_SPACE) << "Population";
+  cout << setw(AREA_SPACE) << "Area" << endl;
+
+  for(int i = 0; i < NAME_SPACE + POP_SPACE + AREA_SPACE; i++) {cout << "-";}
+  cout << endl;
+
+  for(int i = 0; i < max; i++) {
+    cout << left << setw(NAME_SPACE) << s[i].getName();
+    cout << right << setw(POP_SPACE) << s[i].getPopulation();
+    cout << setw(AREA_SPACE) << s[i].getArea() << endl;
+  }
 }
 /////////////////////////* states.cpp DRIVER FILE */////////////////////////
