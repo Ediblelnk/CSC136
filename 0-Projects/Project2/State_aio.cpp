@@ -89,12 +89,12 @@ float State::getPopulationDensity() const {
 }
 
 //OPERATOR OVERLOADS
-bool State::operator>(const State &) const {
-  return this->getPopulationDensity() > getPopulationDensity();
+bool State::operator>(const State &A) const {
+  return getPopulationDensity() > A.getPopulationDensity();
 }
 
-bool State::operator<(const State &) const {
-  return this->getName() < getName();
+bool State::operator<(const State &A) const {
+  return getName() < A.getName();
 }
 
 istream &operator>>(istream &input, State &S) {
@@ -131,12 +131,12 @@ int readDatafile(State[], int);
 // output the formatted "raw data"
 void outputData(State[], int);
 // output the sorted data, including population density
-void outputSorted();
+void outputSorted(State[], int, string);
 
 // sorting routines - use a bubble sort
-void sortAscend();  // set this up to sort by name
-void sortDescend(); // set this up to sort by population density
-void swap();        // used by the bubble sort
+void sortAscend(State[], int);  // set this up to sort by name
+void sortDescend(State[], int); // set this up to sort by population density
+void swap(State&, State&);  // used by the bubble sort
 
 int main() {
 
@@ -144,6 +144,10 @@ int main() {
   int lines = readDatafile(slist, ARRAYSIZE);
 
   outputData(slist, lines);
+  sortAscend(slist, lines);
+  outputSorted(slist, lines, "Alphabetical");
+  sortDescend(slist, lines);
+  outputSorted(slist, lines, "Population Density");
 
   return 0;
 }
@@ -169,6 +173,7 @@ int readDatafile(State s[], int max) {
 
 void outputData(State s[], int max) {
   cout << "\n\n -Data- \n\n";
+  cout << setprecision(1);
   cout << fixed << left << setw(NAME_SPACE) << "Name";
   cout << right << setw(POP_SPACE) << "Population";
   cout << setw(AREA_SPACE) << "Area" << endl;
@@ -180,6 +185,54 @@ void outputData(State s[], int max) {
     cout << left << setw(NAME_SPACE) << s[i].getName();
     cout << right << setw(POP_SPACE) << s[i].getPopulation();
     cout << setw(AREA_SPACE) << s[i].getArea() << endl;
+  }
+}
+
+void outputSorted(State s[], int max, string style) {
+  cout << "\n\n -" << style << " Sorted Data- \n\n"
+   << setprecision(1)
+   << fixed << left << setw(NAME_SPACE) << "Name"
+   << right << setw(POP_SPACE) << "Population"
+   << setw(AREA_SPACE) << "Area"
+   << setw(DENSITY_SPACE) << "Density" << endl;
+
+  cout << fixed << left << setw(NAME_SPACE) << " "
+   << right << setw(POP_SPACE) << "(millions)"
+   << setw(AREA_SPACE) << "(thou. sq. mi.)"
+   << setw(DENSITY_SPACE) << "(peop. per sq. mi.)" << endl; 
+
+  for(int i = 0; i < NAME_SPACE + POP_SPACE + AREA_SPACE + DENSITY_SPACE; i++) {cout << "-";}
+  cout << endl;
+
+  for(int i = 0; i < max; i++) {
+    cout << left << setw(NAME_SPACE) << s[i].getName()
+     << right << setw(POP_SPACE) << s[i].getPopulation()
+     << setw(AREA_SPACE) << s[i].getArea()
+     << setw(DENSITY_SPACE) << s[i].getPopulationDensity() << endl;
+  }
+}
+
+void swap(State &a, State &b) {
+  State temp = a; a = b; b = temp;
+}
+
+void sortAscend(State s[], int max) {
+  bool flag = true;
+  while(flag) {
+    flag = false;
+    for(int i = 0; i < max-1; i++) {
+      if(s[i+1] < s[i]) {swap(s[i], s[i+1]); flag = true;}
+    }
+  }
+}
+
+void sortDescend(State s[], int max) {
+  bool flag = true;
+  while(flag) {
+    flag = false;
+    for(int i = 0; i < max-1; i++) {
+      if(s[i+1] > s[i]) {swap(s[i], s[i+1]); flag = true;}
+    }
   }
 }
 /////////////////////////* states.cpp DRIVER FILE */////////////////////////
